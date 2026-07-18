@@ -267,7 +267,16 @@ const DATA = {
 };
 
 const OL_LABELS = {"it": "Servizi ufficiali di trasporto", "en": "Official transport services", "de": "Offizielle Verkehrsdienste", "pl": "Oficjalne usługi transportowe", "cs": "Oficiální dopravní služby", "es": "Servicios oficiales de transporte"};
-let currentLang = 'it';
+function detectInitialLang(){
+const supported = Object.keys(DATA);
+const langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'it'];
+for (const l of langs){
+const base = l.toLowerCase().split('-')[0];
+if (supported.includes(base)) return base;
+}
+return 'it';
+}
+let currentLang = detectInitialLang();
 let availableVoices = [];
 function loadVoices(){ availableVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : []; }
 if ('speechSynthesis' in window) { loadVoices(); window.speechSynthesis.onvoiceschanged = loadVoices; }
@@ -355,6 +364,10 @@ document.getElementById('langBar').addEventListener('click', (e) => {
   btn.classList.add('active');
   currentLang = btn.getAttribute('data-lang');
   renderContent();
+});
+
+document.querySelectorAll('.lang-btn').forEach(b => {
+b.classList.toggle('active', b.getAttribute('data-lang') === currentLang);
 });
 
 renderContent();
